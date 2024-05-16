@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { createUser, getUser } from "../models/user-auth.model";
 import { encryptPassword, checkUser } from "../utils";
+import jwt from "jsonwebtoken";
+const SECRET = String(process.env.SECRET);
 const router = Router();
 
 router.post("/register", async (req, res) => {
@@ -39,8 +41,14 @@ router.post("/login", async (req, res) => {
 		);
 
 		if (checkUserisValid) {
-			res.redirect("/dashboard");
-			res.status(200).send({ message: "user created successfully" });
+			const token = jwt.sign({ username }, SECRET, {
+				expiresIn: "48h",
+			});
+
+			res.status(200).send({
+				message: "user logged in successfully",
+				token: token,
+			});
 		} else {
 			res.status(401).send({ message: "please check the password" });
 		}
@@ -49,3 +57,7 @@ router.post("/login", async (req, res) => {
 		res.status(500).send({ message: "internal server error" });
 	}
 });
+
+
+
+export default router;
