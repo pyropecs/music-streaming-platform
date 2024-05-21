@@ -2,7 +2,7 @@ import { Router } from "express";
 import { createUser, getUser } from "../models/user-auth.model";
 import { encryptPassword, checkUser } from "../utils";
 import jwt from "jsonwebtoken";
-
+import { verifyToken } from "../middlewares/user-auth.middlewares";
 const router = Router();
 router.post("/register", async (req, res) => {
 	try {
@@ -49,7 +49,7 @@ router.post("/register", async (req, res) => {
 	}
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", verifyToken,async (req, res) => {
 	try {
 		const { username, password } = await req.body;
 		const SECRET = process.env.SECRET;
